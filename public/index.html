@@ -55,7 +55,7 @@
     display:inline-flex;align-items:center;justify-content:center;line-height:1;flex:none;
   }
 
-  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
   .section-title{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;}
   .add-btn{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--ink);color:#fff;border:none;padding:8px 15px;border-radius:100px;cursor:pointer;}
   .add-btn.ghost{background:none;border:1px dashed var(--line);color:var(--muted);}
@@ -256,39 +256,9 @@
   .status-popup-option.active .check{visibility:visible;}
 
   @media (max-width:640px){
-    body{overflow-x:hidden;padding:20px 12px 90px;}
     .stats{grid-template-columns:1fr 1fr;}
-
-    header{gap:10px;}
-    h1{font-size:21px;}
-    .authbar{width:100%;justify-content:flex-end;}
-
-    .toolbar .add-btn{font-size:11px;padding:7px 12px;}
-
-    .add-form, .pin-add-form{flex-direction:column;align-items:stretch;}
-    .add-form .field, .pin-add-form .field{width:100%;}
-    .add-form input, .pin-add-form input, .pin-add-form select{width:100%;font-size:16px;}
-    .add-form input#newName{min-width:0;}
-    .add-form .add-btn, .pin-add-form .add-btn{width:100%;}
-
-    /* Rows: wrap into two lines — name/avatar + controls on line 1,
-       the stage timeline gets the FULL row width on line 2 instead of
-       being squeezed into a tiny scrollable sliver next to everything else. */
-    .row{flex-wrap:wrap;row-gap:8px;column-gap:8px;padding:12px;}
-    .row-left{width:auto;flex:1 1 auto;min-width:0;gap:6px;}
-    .name-input{font-size:14px;}
-    .avatar-input{height:24px;font-size:14px;padding:0 7px;width:58px;}
-    .ybadge, .grad-badge{font-size:9px;padding:3px 6px;}
-
-    .row-right{order:2;width:auto;font-size:11px;}
-    .year-stepper{order:2;}
-    .grad-btn, .grad-btn-spacer{order:2;width:22px;}
-    .remove-x{order:2;width:16px;}
-
-    .row-mid{order:5;flex:1 1 100%;width:100%;margin-top:0;}
-    .timeline{min-width:0;}
-    .step-label{font-size:8px;max-width:44px;}
-    .dot, .dot-wrap{width:14px;height:14px;}
+    .row-left{width:170px;gap:6px;}
+    .avatar-input{height:22px;font-size:10px;padding:0 6px;width:64px;}
   }
 </style>
 </head>
@@ -377,15 +347,15 @@
 </div>
 
 <script>
-// Polyfill window.storage so it talks to our own Express server (server.js)
-// instead of the claude.ai-only artifact storage API. This keeps the rest of
-// the app's code (which calls window.storage.get/set/delete) completely
-// unchanged — only the underlying implementation is swapped out.
+// --- shim: ทำให้ window.storage เขียน/อ่านผ่านเซิร์ฟเวอร์บนเครื่องนี้แทน ---
+// (ของเดิมออกแบบมาให้รันในสภาพแวดล้อม Claude artifact ซึ่งมี window.storage
+// ให้อยู่แล้ว พอเอามารันเป็นเว็บทั่วไปจึงต้องทำ API หน้าตาเดียวกันขึ้นมาเอง
+// โดยฝั่ง server.js จะเขียนไฟล์ลง data/store.json จริงบนดิสก์)
 window.storage = {
   async get(key) {
     const res = await fetch('/api/storage/' + encodeURIComponent(key));
     if (res.status === 404) return null;
-    if (!res.ok) throw new Error('storage get failed: ' + res.status);
+    if (!res.ok) throw new Error('storage get failed');
     return res.json();
   },
   async set(key, value) {
@@ -394,15 +364,16 @@ window.storage = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ value })
     });
-    if (!res.ok) throw new Error('storage set failed: ' + res.status);
+    if (!res.ok) throw new Error('storage set failed');
     return res.json();
   },
   async delete(key) {
     const res = await fetch('/api/storage/' + encodeURIComponent(key), { method: 'DELETE' });
-    if (!res.ok) throw new Error('storage delete failed: ' + res.status);
+    if (!res.ok) throw new Error('storage delete failed');
     return res.json();
   }
 };
+// --- จบส่วน shim ---
 
 const STORAGE_KEY = 'residents-rows-v1';
 
@@ -476,12 +447,7 @@ function needsFollowUp(r){
 
 async function load(){
   try{
-    if(!window.storage || typeof window.storage.get !== 'function'){
-      throw new Error('storage API unavailable');
-    }
-    // guard against a storage call that never resolves in some preview contexts
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('storage timeout')), 4000));
-    const res = await Promise.race([window.storage.get(STORAGE_KEY, true), timeout]);
+    const res = await window.storage.get(STORAGE_KEY, true);
     if(res && res.value){
       const parsed = JSON.parse(res.value);
       residents = (Array.isArray(parsed.residents) && parsed.residents.length) ? parsed.residents : sampleData();
@@ -491,23 +457,9 @@ async function load(){
       pins = defaultPins();
     }
   }catch(e){ residents = sampleData(); pins = defaultPins(); }
-  try{
-    migrateStages();
-    syncStageNames();
-  }catch(e){
-    // if migrating previously-saved data ever fails, don't leave the board blank —
-    // fall back to a known-good sample dataset instead.
-    residents = sampleData();
-    pins = defaultPins();
-  }
-  try{
-    render();
-  }catch(e){
-    console.error('render failed, retrying with sample data', e);
-    residents = sampleData();
-    pins = defaultPins();
-    render();
-  }
+  migrateStages();
+  syncStageNames();
+  render();
 }
 function migrateStages(){
   // older saved data may only have the pre-"Stat Review v2" stage count.
@@ -1111,9 +1063,9 @@ function startBorderDotLoop(){
   }
   requestAnimationFrame(frame);
 }
-try{ if(typeof requestAnimationFrame === 'function') startBorderDotLoop(); }catch(e){ console.error(e); }
+startBorderDotLoop();
 
-try{ load(); }catch(e){ console.error('load() failed to start', e); }
+load();
 </script>
 </body>
 </html>
