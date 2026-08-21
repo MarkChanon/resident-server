@@ -257,12 +257,34 @@
 
   @media (max-width:640px){
     .stats{grid-template-columns:1fr 1fr;}
+    body{padding:20px 12px 90px;}
+
+    /* แทนที่จะเรียง ชื่อ-เส้นสถานะ-เปอร์เซ็นต์ ในแถวเดียว (ทำให้เส้นสถานะ
+       เหลือพื้นที่แคบมากจนต้องเลื่อนดู) ให้สลับเป็นเรียงบน-ล่างแทน:
+       บรรทัดบน = ชื่อ, บรรทัดกลาง = เส้นสถานะเต็มความกว้างจอ,
+       บรรทัดล่าง = เปอร์เซ็นต์ + ปุ่มต่างๆ */
+    .row{flex-wrap:wrap;row-gap:10px;padding:12px 14px;}
+    .row-left{width:100%;order:1;gap:6px;}
+    .avatar-input{height:22px;font-size:10px;padding:0 6px;width:64px;}
+
+    .row-mid{width:100%;order:2;overflow-x:visible;}
+    .timeline{min-width:0;width:100%;padding:10px 2px 0;}
+    .dot-wrap{width:12px;height:12px;}
+    .dot{width:12px;height:12px;font-size:7px;}
+    .connector{top:13px;}
+    .connector.connected{top:12px;}
+    .connector-hit{height:26px;top:-7px;}
+    .year-ceiling{top:-5px;height:32px;}
+    .step-label{font-size:7px;line-height:1.15;max-width:36px;margin-top:5px;word-break:break-word;}
+
+    .row-right{order:3;width:auto;margin-left:auto;}
+    .year-stepper{order:3;}
+    .grad-btn,.grad-btn-spacer{order:3;}
+    .remove-x{order:3;}
   }
-  #scaleOuter{position:relative;}
 </style>
 </head>
 <body>
-<div id="scaleOuter">
 <div class="wrap">
   <header>
     <div>
@@ -339,7 +361,6 @@
   <div id="alumniWrap"></div>
 
   <footer><button class="reset-btn" id="resetBtn">คืนค่าเป็นข้อมูลตัวอย่าง</button></footer>
-</div>
 </div>
 
 <div class="status-overlay" id="statusOverlay"></div>
@@ -632,39 +653,6 @@ document.getElementById('confirmAddPinBtn').addEventListener('click', () => {
   renderPinPanel();
 });
 
-// บนจอแคบ (มือถือ) แทนที่จะจัดเลย์เอาต์ใหม่ (ซึ่งทำให้เส้นสถานะถูกบีบจนอ่านไม่ออก)
-// ให้ "ย่อทั้งหน้าลงทั้งชุด" เหมือนตอนบีบนิ้วซูมออกในเบราว์เซอร์ — สัดส่วนทุกอย่าง
-// จะเหมือนหน้าจอคอมทุกประการ แค่เล็กลงพอดีกับความกว้างจอจริง
-const SCALE_DESIGN_WIDTH = 900;
-function applyResponsiveScale(){
-  const wrap = document.querySelector('.wrap');
-  const outer = document.getElementById('scaleOuter');
-  if(!wrap || !outer) return;
-  const vw = window.innerWidth;
-  if(vw < SCALE_DESIGN_WIDTH){
-    const scale = vw / SCALE_DESIGN_WIDTH;
-    wrap.style.width = SCALE_DESIGN_WIDTH + 'px';
-    wrap.style.position = 'absolute';
-    wrap.style.top = '0';
-    wrap.style.left = '0';
-    wrap.style.transform = 'scale(' + scale + ')';
-    wrap.style.transformOrigin = 'top left';
-    outer.style.height = Math.ceil(wrap.scrollHeight * scale) + 'px';
-  } else {
-    wrap.style.width = '';
-    wrap.style.position = '';
-    wrap.style.top = '';
-    wrap.style.left = '';
-    wrap.style.transform = '';
-    outer.style.height = '';
-  }
-}
-window.addEventListener('resize', applyResponsiveScale);
-window.addEventListener('orientationchange', applyResponsiveScale);
-if(document.fonts && document.fonts.ready){
-  document.fonts.ready.then(applyResponsiveScale);
-}
-
 function render(){
   closeStatusPopup();
   renderAuthBar();
@@ -690,7 +678,6 @@ function render(){
   renderAlumniSection(graduated);
 
   save();
-  applyResponsiveScale();
 }
 
 function renderAlumniSection(graduated){
