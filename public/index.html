@@ -377,6 +377,33 @@
 </div>
 
 <script>
+// Polyfill window.storage so it talks to our own Express server (server.js)
+// instead of the claude.ai-only artifact storage API. This keeps the rest of
+// the app's code (which calls window.storage.get/set/delete) completely
+// unchanged — only the underlying implementation is swapped out.
+window.storage = {
+  async get(key) {
+    const res = await fetch('/api/storage/' + encodeURIComponent(key));
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error('storage get failed: ' + res.status);
+    return res.json();
+  },
+  async set(key, value) {
+    const res = await fetch('/api/storage/' + encodeURIComponent(key), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ value })
+    });
+    if (!res.ok) throw new Error('storage set failed: ' + res.status);
+    return res.json();
+  },
+  async delete(key) {
+    const res = await fetch('/api/storage/' + encodeURIComponent(key), { method: 'DELETE' });
+    if (!res.ok) throw new Error('storage delete failed: ' + res.status);
+    return res.json();
+  }
+};
+
 const STORAGE_KEY = 'residents-rows-v1';
 
 const STAGE_NAMES = [
