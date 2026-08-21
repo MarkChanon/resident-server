@@ -257,8 +257,30 @@
 
   @media (max-width:640px){
     .stats{grid-template-columns:1fr 1fr;}
-    .row-left{width:170px;gap:6px;}
+    body{padding:20px 12px 90px;}
+
+    /* แทนที่จะเรียง ชื่อ-เส้นสถานะ-เปอร์เซ็นต์ ในแถวเดียว (ทำให้เส้นสถานะ
+       เหลือพื้นที่แคบมากจนต้องเลื่อนดู) ให้สลับเป็นเรียงบน-ล่างแทน:
+       บรรทัดบน = ชื่อ, บรรทัดกลาง = เส้นสถานะเต็มความกว้างจอ,
+       บรรทัดล่าง = เปอร์เซ็นต์ + ปุ่มต่างๆ */
+    .row{flex-wrap:wrap;row-gap:10px;padding:12px 14px;}
+    .row-left{width:100%;order:1;gap:6px;}
     .avatar-input{height:22px;font-size:10px;padding:0 6px;width:64px;}
+
+    .row-mid{width:100%;order:2;overflow-x:visible;}
+    .timeline{min-width:0;width:100%;padding:10px 2px 0;}
+    .dot-wrap{width:12px;height:12px;}
+    .dot{width:12px;height:12px;font-size:7px;}
+    .connector{top:13px;}
+    .connector.connected{top:12px;}
+    .connector-hit{height:26px;top:-7px;}
+    .year-ceiling{top:-5px;height:32px;}
+    .step-label{font-size:7px;line-height:1.15;max-width:36px;margin-top:5px;word-break:break-word;}
+
+    .row-right{order:3;width:auto;margin-left:auto;}
+    .year-stepper{order:3;}
+    .grad-btn,.grad-btn-spacer{order:3;}
+    .remove-x{order:3;}
   }
 </style>
 </head>
