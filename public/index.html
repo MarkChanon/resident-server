@@ -259,15 +259,26 @@
     .stats{grid-template-columns:1fr 1fr;}
     body{padding:20px 12px 90px;}
 
-    /* แทนที่จะเรียง ชื่อ-เส้นสถานะ-เปอร์เซ็นต์ ในแถวเดียว (ทำให้เส้นสถานะ
-       เหลือพื้นที่แคบมากจนต้องเลื่อนดู) ให้สลับเป็นเรียงบน-ล่างแทน:
-       บรรทัดบน = ชื่อ, บรรทัดกลาง = เส้นสถานะเต็มความกว้างจอ,
-       บรรทัดล่าง = เปอร์เซ็นต์ + ปุ่มต่างๆ */
-    .row{flex-wrap:wrap;row-gap:10px;padding:12px 14px;}
-    .row-left{width:100%;order:1;gap:6px;}
+    /* จัดแถวด้วย CSS grid แทน flex-wrap เพื่อคุมตำแหน่งแต่ละส่วนได้ชัดเจน:
+       แถวบน = ชื่อ + ปุ่มสำเร็จการศึกษา/ลบ, แถวกลาง = เส้นสถานะเต็มความกว้าง,
+       แถวล่าง = ตัวเลื่อนปี + เปอร์เซ็นต์ */
+    .row{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      grid-template-areas:
+        "name grad remove"
+        "timeline timeline timeline"
+        "pct pct pct";
+      column-gap:8px;row-gap:8px;
+      align-items:center;
+      padding:12px 14px;
+    }
+    .row-left{grid-area:name;width:auto;min-width:0;gap:6px;}
     .avatar-input{height:22px;font-size:10px;padding:0 6px;width:64px;}
+    .grad-btn,.grad-btn-spacer{grid-area:grad;}
+    .remove-x{grid-area:remove;}
 
-    .row-mid{width:100%;order:2;overflow-x:visible;}
+    .row-mid{grid-area:timeline;overflow-x:hidden;min-width:0;}
     .timeline{min-width:0;width:100%;padding:10px 2px 0;}
     .dot-wrap{width:12px;height:12px;}
     .dot{width:12px;height:12px;font-size:7px;}
@@ -277,10 +288,8 @@
     .year-ceiling{top:-5px;height:32px;}
     .step-label{font-size:7px;line-height:1.15;max-width:36px;margin-top:5px;word-break:break-word;}
 
-    .row-right{order:3;width:auto;margin-left:auto;}
-    .year-stepper{order:3;}
-    .grad-btn,.grad-btn-spacer{order:3;}
-    .remove-x{order:3;}
+    .row-right{grid-area:pct;justify-self:end;width:auto;}
+    .year-stepper{grid-area:pct;justify-self:start;}
   }
 </style>
 </head>
