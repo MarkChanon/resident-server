@@ -236,7 +236,7 @@
   .remove-x.armed{color:var(--flag);font-weight:700;}
   .remove-x:hover{color:var(--amber);}
 
-  footer{display:flex;justify-content:center;margin-top:28px;}
+  footer{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:28px;}
   .reset-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
 
   .status-overlay{position:fixed;inset:0;z-index:49;display:none;}
@@ -259,16 +259,17 @@
     .stats{grid-template-columns:1fr 1fr;}
     body{padding:20px 12px 90px;}
 
+    header{flex-direction:column;align-items:flex-start;}
+    .authbar{justify-content:flex-end;align-self:flex-end;width:auto;}
     /* จัดแถวด้วย CSS grid แทน flex-wrap เพื่อคุมตำแหน่งแต่ละส่วนได้ชัดเจน:
        แถวบน = ชื่อ + ปุ่มสำเร็จการศึกษา/ลบ, แถวกลาง = เส้นสถานะเต็มความกว้าง,
        แถวล่าง = ตัวเลื่อนปี + เปอร์เซ็นต์ */
     .row{
       display:grid;
-      grid-template-columns:1fr auto auto;
+      grid-template-columns:1fr auto auto auto auto;
       grid-template-areas:
-        "name grad remove"
-        "timeline timeline timeline"
-        "pct pct pct";
+        "name stepper grad pct remove"
+        "timeline timeline timeline timeline timeline";
       column-gap:8px;row-gap:8px;
       align-items:center;
       padding:12px 14px;
@@ -288,8 +289,8 @@
     .year-ceiling{top:-5px;height:32px;}
     .step-label{font-size:7px;line-height:1.15;max-width:36px;margin-top:5px;word-break:break-word;}
 
-    .row-right{grid-area:pct;justify-self:end;width:auto;}
-    .year-stepper{grid-area:pct;justify-self:start;}
+    .row-right{grid-area:pct;width:auto;}
+    .year-stepper{grid-area:stepper;}
   }
 </style>
 </head>
@@ -369,7 +370,10 @@
   <div class="board" id="board"></div>
   <div id="alumniWrap"></div>
 
-  <footer><button class="reset-btn" id="resetBtn">คืนค่าเป็นข้อมูลตัวอย่าง</button></footer>
+  <footer>
+    <button class="reset-btn" id="resetBtn">คืนค่าเป็นข้อมูลตัวอย่าง</button>
+    <input type="file" id="importFileInput" accept="application/json" style="display:none;">
+  </footer>
 </div>
 
 <div class="status-overlay" id="statusOverlay"></div>
@@ -542,6 +546,8 @@ function renderAuthBar(){
             <span class="auth-popup-name">${escapeHtml(authLabel)}</span>
           </div>
           ${isAdmin() ? '<button class="auth-popup-item" id="togglePinPanelBtn">จัดการ PIN</button>' : ''}
+          ${isAdmin() ? '<button class="auth-popup-item" id="popupExportBtn">ดาวน์โหลดข้อมูลสำรอง (.json)</button>' : ''}
+          ${isAdmin() ? '<button class="auth-popup-item" id="popupImportBtn">นำเข้าข้อมูลจากไฟล์สำรอง</button>' : ''}
           <button class="auth-popup-item danger" id="logoutBtn">ออกจากระบบ</button>
         </div>
       </div>
@@ -561,6 +567,14 @@ function renderAuthBar(){
         const showing = panel.style.display !== 'none';
         panel.style.display = showing ? 'none' : 'block';
         if(!showing) renderPinPanel();
+      });
+      document.getElementById('popupExportBtn').addEventListener('click', () => {
+        document.getElementById('authPopup').classList.remove('open');
+        exportBackup();
+      });
+      document.getElementById('popupImportBtn').addEventListener('click', () => {
+        document.getElementById('authPopup').classList.remove('open');
+        document.getElementById('importFileInput').click();
       });
     }
   } else {
@@ -1051,6 +1065,47 @@ document.getElementById('resetBtn').addEventListener('click', (e) => {
       if(resetArmed){ resetArmed = false; e.target.textContent = 'คืนค่าเป็นข้อมูลตัวอย่าง'; }
     }, 3000);
   }
+});
+
+function exportBackup(){
+  if(!isAdmin()) return;
+  const data = JSON.stringify({ residents, pins }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const pad = n => String(n).padStart(2,'0');
+  const now = new Date();
+  const stamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `residents-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('importFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data || !Array.isArray(data.residents) || !Array.isArray(data.pins)){
+      throw new Error('รูปแบบไฟล์ไม่ถูกต้อง (ต้องเป็นไฟล์สำรองที่ดาวน์โหลดจากเว็บนี้)');
+    }
+    const ok = confirm('นำเข้าข้อมูลนี้จะแทนที่ข้อมูลปัจจุบันทั้งหมด ต้องการดำเนินการต่อหรือไม่?');
+    if(!ok){ e.target.value = ''; return; }
+    residents = data.residents;
+    pins = data.pins;
+    migrateStages();
+    syncStageNames();
+    await save();
+    render();
+    alert('นำเข้าข้อมูลสำเร็จ');
+  } catch(err){
+    alert('นำเข้าข้อมูลไม่สำเร็จ: ' + err.message);
+  }
+  e.target.value = '';
 });
 
 function pillPerimeterPoint(t, w, h){
