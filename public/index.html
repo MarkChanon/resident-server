@@ -236,9 +236,6 @@
   .remove-x.armed{color:var(--flag);font-weight:700;}
   .remove-x:hover{color:var(--amber);}
 
-  footer{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:28px;}
-  .reset-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
-
   .status-overlay{position:fixed;inset:0;z-index:49;display:none;}
   .status-popup{
     position:fixed;z-index:50;display:none;background:var(--paper-raised);
@@ -255,15 +252,12 @@
   .status-popup-option .check{margin-left:auto;color:var(--teal);font-size:12px;visibility:hidden;}
   .status-popup-option.active .check{visibility:visible;}
 
-  @media (max-width:640px){
+  @media (max-width:750px){
     .stats{grid-template-columns:1fr 1fr;}
     body{padding:20px 12px 90px;}
-
     header{flex-direction:column;align-items:flex-start;}
     .authbar{justify-content:flex-end;align-self:flex-end;width:auto;}
-    /* จัดแถวด้วย CSS grid แทน flex-wrap เพื่อคุมตำแหน่งแต่ละส่วนได้ชัดเจน:
-       แถวบน = ชื่อ + ปุ่มสำเร็จการศึกษา/ลบ, แถวกลาง = เส้นสถานะเต็มความกว้าง,
-       แถวล่าง = ตัวเลื่อนปี + เปอร์เซ็นต์ */
+
     .row{
       display:grid;
       grid-template-columns:1fr auto auto auto auto;
@@ -370,10 +364,7 @@
   <div class="board" id="board"></div>
   <div id="alumniWrap"></div>
 
-  <footer>
-    <button class="reset-btn" id="resetBtn">คืนค่าเป็นข้อมูลตัวอย่าง</button>
-    <input type="file" id="importFileInput" accept="application/json" style="display:none;">
-  </footer>
+  <input type="file" id="importFileInput" accept="application/json" style="display:none;">
 </div>
 
 <div class="status-overlay" id="statusOverlay"></div>
@@ -430,18 +421,186 @@ const N='none', P='pending', I='in_progress', D='done', U='unknown';
 
 function sampleData(){
   return [
-    { id: uid(), name: 'นพ. กิตติ ศรีสวัสดิ์',    nickname: 'บอล',   year: 1, status: 'active', stages: stagesFromList([D,I,N,N,N,N,N,N,N,N]) },
-    { id: uid(), name: 'พญ. สุดา รัตนากร',        nickname: 'หมิว',  year: 1, status: 'active', stages: stagesFromList([D,D,I,N,N,N,N,N,N,N]) },
-    { id: uid(), name: 'นพ. ปิยะ วงศ์ทอง',        nickname: 'เอก',   year: 1, status: 'active', stages: stagesFromList([D,U,N,N,N,N,N,N,N,N]) },
-    { id: uid(), name: 'พญ. อรอุมา ธนากิจ',       nickname: 'เอิร์ธ', year: 1, status: 'active', stages: stagesFromList([D,I,N,N,N,N,N,N,N,N]) },
-    { id: uid(), name: 'นพ. ธนวัฒน์ ชัยมงคล',      nickname: 'ไนซ์',  year: 2, status: 'active', stages: withConnected(stagesFromList([D,D,D,P,I,N,N,N,N,N]), [3]) },
-    { id: uid(), name: 'พญ. นภัสสร ใจเย็น',        nickname: 'แนน',   year: 2, status: 'active', stages: stagesFromList([D,D,D,D,I,N,N,N,N,N]) },
-    { id: uid(), name: 'นพ. ชานนท์ พงษ์ไพศาล',     nickname: 'นนท์',  year: 2, status: 'active', stages: stagesFromList([D,D,I,N,N,N,N,N,N,N]) },
-    { id: uid(), name: 'พญ. วิภาวี เพชรรุ่ง',       nickname: 'วีวี่', year: 2, status: 'active', stages: withConnected(stagesFromList([D,D,D,P,I,N,N,N,N,N]), [3]) },
-    { id: uid(), name: 'นพ. อนุพงศ์ แสงทอง',       nickname: 'พงศ์',  year: 3, status: 'active', stages: stagesFromList([D,D,D,D,D,D,D,I,N,N]) },
-    { id: uid(), name: 'พญ. ปาริชาติ โพธิ์งาม',     nickname: 'ชาติ',  year: 3, status: 'active', stages: stagesFromList([D,D,D,D,D,D,D,D,I,N]) },
-    { id: uid(), name: 'นพ. เศรษฐพงศ์ อินทรวิเชียร', nickname: 'เศรษฐ์', year: 3, status: 'active', stages: stagesFromList([D,D,D,D,D,D,D,D,D,I]) },
-    { id: uid(), name: 'พญ. มัลลิกา บุญเรือง',      nickname: 'มิ้นท์', year: 3, status: 'graduated', gradYear: 2567, stages: stagesFromList([D,D,D,D,D,D,D,D,D,D]) },
+    { id: "2b58juu", name: "นพ. พณิช ห่านตระกูล", nickname: "หมอออม", year: 1, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "in_progress", connected: false },
+      { name: "โครงร่าง", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "EC", status: "none", connected: false },
+      { name: "เก็บข้อมูล", status: "none", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "vgvtjzh", name: "พญ. วนพร อุตมะ", nickname: "หมอมิ้น", year: 1, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "in_progress", connected: false },
+      { name: "โครงร่าง", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "EC", status: "none", connected: false },
+      { name: "เก็บข้อมูล", status: "none", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "qlg5jji", name: "นพ. สรวิชญ์ บุรกิจภาชัย", nickname: "หมอบีม", year: 1, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "in_progress", connected: false },
+      { name: "โครงร่าง", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "EC", status: "none", connected: false },
+      { name: "เก็บข้อมูล", status: "none", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "g6glkj4", name: "พญ. ศุภิสรา เจริญสวัสดิ", nickname: "หมอมาย", year: 1, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "in_progress", connected: false },
+      { name: "โครงร่าง", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "EC", status: "none", connected: false },
+      { name: "เก็บข้อมูล", status: "none", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "n970cao", name: "พญ. ดวงกมล หมื่นชัยกุล", nickname: "หมอหมิว", year: 2, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "pending", connected: true },
+      { name: "เก็บข้อมูล", status: "in_progress", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "1tipuob", name: "พญ. หทัยรัตน์ ยาวิชัย", nickname: "หมอเก๋", year: 2, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "pending", connected: false },
+      { name: "เก็บข้อมูล", status: "none", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "jmv6yjv", name: "พญ. ณปภัช ไชยมงคล", nickname: "หมอนกหวีด", year: 2, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "pending", connected: false },
+      { name: "เก็บข้อมูล", status: "in_progress", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "2xpu3z4", name: "นพ. สุทธิพัฒน์ เลิศไพศาลพิพัฒน์", nickname: "หมอเอ็ม", year: 2, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "pending", connected: true },
+      { name: "เก็บข้อมูล", status: "in_progress", connected: false },
+      { name: "วิเคราะห์", status: "none", connected: false },
+      { name: "Stat Review", status: "none", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "87mbk71", name: "พญ.ญาสุมินทร์ แยบคาย", nickname: "หมอเหมียว", year: 3, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "done", connected: false },
+      { name: "เก็บข้อมูล", status: "done", connected: false },
+      { name: "วิเคราะห์", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "เขียนรายงาน", status: "done", connected: false },
+      { name: "สอบป้องกัน", status: "done", connected: false },
+      { name: "ตีพิมพ์", status: "in_progress", connected: false }
+    ] },
+    { id: "67wf011", name: "พญ. วริยดา เบี้ยวบรรจง", nickname: "หมอหยง", year: 3, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "done", connected: false },
+      { name: "เก็บข้อมูล", status: "done", connected: false },
+      { name: "วิเคราะห์", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "เขียนรายงาน", status: "done", connected: false },
+      { name: "สอบป้องกัน", status: "done", connected: false },
+      { name: "ตีพิมพ์", status: "in_progress", connected: false }
+    ] },
+    { id: "ortcxer", name: "นพ. ชวิศ พรายงาม", nickname: "หมอนิกกี้", year: 3, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "done", connected: false },
+      { name: "เก็บข้อมูล", status: "done", connected: false },
+      { name: "วิเคราะห์", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "เขียนรายงาน", status: "in_progress", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "1l5grzy", name: "พญ. กัญญาภัค อภิรมย์พร", nickname: "หมอวิว", year: 3, status: "graduated", gradYear: 2569, stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "done", connected: false },
+      { name: "เก็บข้อมูล", status: "done", connected: false },
+      { name: "วิเคราะห์", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "เขียนรายงาน", status: "done", connected: false },
+      { name: "สอบป้องกัน", status: "done", connected: false },
+      { name: "ตีพิมพ์", status: "done", connected: false }
+    ] },
+    { id: "z3rkmq7", name: "นพ. ธีรพล ธิอุด", nickname: "หมอมอส", year: 3, status: "active", stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "done", connected: false },
+      { name: "เก็บข้อมูล", status: "done", connected: false },
+      { name: "วิเคราะห์", status: "in_progress", connected: false },
+      { name: "Stat Review", status: "in_progress", connected: false },
+      { name: "เขียนรายงาน", status: "none", connected: false },
+      { name: "สอบป้องกัน", status: "none", connected: false },
+      { name: "ตีพิมพ์", status: "none", connected: false }
+    ] },
+    { id: "wds56jc", name: "นพ. ศิรวิทย์ เขียวปัญญา", nickname: "หมอแม็ก", year: 3, status: "graduated", gradYear: 2569, stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "done", connected: false },
+      { name: "เก็บข้อมูล", status: "done", connected: false },
+      { name: "วิเคราะห์", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: true },
+      { name: "เขียนรายงาน", status: "done", connected: false },
+      { name: "สอบป้องกัน", status: "done", connected: false },
+      { name: "ตีพิมพ์", status: "done", connected: false }
+    ] },
+    { id: "6cq2zvm", name: "นพ. กฤตวิทย์ มีประดิษฐ์", nickname: "หมอกฤต", year: 3, status: "graduated", gradYear: 2569, stages: [
+      { name: "เลือกหัวข้อ", status: "done", connected: false },
+      { name: "โครงร่าง", status: "done", connected: false },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "EC", status: "done", connected: false },
+      { name: "เก็บข้อมูล", status: "done", connected: false },
+      { name: "วิเคราะห์", status: "done", connected: true },
+      { name: "Stat Review", status: "done", connected: false },
+      { name: "เขียนรายงาน", status: "done", connected: false },
+      { name: "สอบป้องกัน", status: "done", connected: false },
+      { name: "ตีพิมพ์", status: "done", connected: false }
+    ] }
   ];
 }
 
@@ -456,7 +615,21 @@ let authResidentId = null;
 let authLabel = '';
 
 function defaultPins(){
-  return [{ id: uid(), pin: '0000', role: 'admin', residentId: null, label: 'แอดมิน (เริ่มต้น)' }];
+  return [
+    { id: "ph39zm6", pin: "0000", role: "admin", residentId: null, label: "แอดมิน (เริ่มต้น)" },
+    { id: "4sugt3k", pin: "0109", role: "resident", residentId: "2b58juu", label: "หมอออม", disabled: false },
+    { id: "1u8nrak", pin: "3007", role: "resident", residentId: "qlg5jji", label: "หมอบีม", disabled: false },
+    { id: "n0ylmbx", pin: "1809", role: "resident", residentId: "vgvtjzh", label: "หมอมิ้น", disabled: false },
+    { id: "9ngpneu", pin: "1502", role: "resident", residentId: "g6glkj4", label: "หมอมาย", disabled: false },
+    { id: "5ec1587", pin: "1402", role: "resident", residentId: "2xpu3z4", label: "หมอเอ็ม", disabled: false },
+    { id: "lyrb07q", pin: "1802", role: "resident", residentId: "jmv6yjv", label: "หมอนกหวีด", disabled: false },
+    { id: "t0erj85", pin: "1603", role: "resident", residentId: "n970cao", label: "หมอหมิว", disabled: false },
+    { id: "iyky2ro", pin: "0104", role: "resident", residentId: "1tipuob", label: "หมอเก๋", disabled: false },
+    { id: "dvliuwl", pin: "1508", role: "resident", residentId: "ortcxer", label: "หมอนิกกี้", disabled: false },
+    { id: "hrlp43c", pin: "1105", role: "resident", residentId: "z3rkmq7", label: "หมอมอส", disabled: false },
+    { id: "6umxgxc", pin: "1109", role: "resident", residentId: "87mbk71", label: "หมอเหมียว", disabled: false },
+    { id: "dyxqqte", pin: "0308", role: "resident", residentId: "67wf011", label: "หมอหยง", disabled: false }
+  ];
 }
 
 const STATUS_ORDER = ['unknown','in_progress','pending','done'];
@@ -523,6 +696,47 @@ function syncStageNames(){
 async function save(){
   try{ await window.storage.set(STORAGE_KEY, JSON.stringify({ residents, pins }), true); }catch(e){ console.error(e); }
 }
+
+function exportBackup(){
+  if(!isAdmin()) return;
+  const data = JSON.stringify({ residents, pins }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const pad = n => String(n).padStart(2,'0');
+  const now = new Date();
+  const stamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `residents-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('importFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if(!data || !Array.isArray(data.residents) || !Array.isArray(data.pins)){
+      throw new Error('รูปแบบไฟล์ไม่ถูกต้อง (ต้องเป็นไฟล์สำรองที่ดาวน์โหลดจากเว็บนี้)');
+    }
+    const ok = confirm('นำเข้าข้อมูลนี้จะแทนที่ข้อมูลปัจจุบันทั้งหมด ต้องการดำเนินการต่อหรือไม่?');
+    if(!ok){ e.target.value = ''; return; }
+    residents = data.residents;
+    pins = data.pins;
+    migrateStages();
+    syncStageNames();
+    await save();
+    render();
+    alert('นำเข้าข้อมูลสำเร็จ');
+  } catch(err){
+    alert('นำเข้าข้อมูลไม่สำเร็จ: ' + err.message);
+  }
+  e.target.value = '';
+});
 
 function isAdmin(){ return authRole === 'admin'; }
 function canEditResident(r){
@@ -680,7 +894,6 @@ function render(){
   closeStatusPopup();
   renderAuthBar();
   document.getElementById('addBtn').style.display = isAdmin() ? 'inline-block' : 'none';
-  document.getElementById('resetBtn').style.display = isAdmin() ? 'inline-block' : 'none';
   if(!isAdmin()){
     document.getElementById('addForm').style.display = 'none';
     document.getElementById('pinPanel').style.display = 'none';
@@ -1048,65 +1261,6 @@ document.getElementById('confirmAddBtn').addEventListener('click', () => {
 });
 document.getElementById('newName').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('confirmAddBtn').click(); });
 document.getElementById('newNickname').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('confirmAddBtn').click(); });
-
-let resetArmed = false;
-document.getElementById('resetBtn').addEventListener('click', (e) => {
-  if(!isAdmin()) return;
-  if(resetArmed){
-    residents = sampleData();
-    pins = defaultPins();
-    resetArmed = false;
-    e.target.textContent = 'คืนค่าเป็นข้อมูลตัวอย่าง';
-    render();
-  } else {
-    resetArmed = true;
-    e.target.textContent = 'คลิกอีกครั้งเพื่อยืนยัน — ข้อมูลปัจจุบันจะหายไป';
-    setTimeout(() => {
-      if(resetArmed){ resetArmed = false; e.target.textContent = 'คืนค่าเป็นข้อมูลตัวอย่าง'; }
-    }, 3000);
-  }
-});
-
-function exportBackup(){
-  if(!isAdmin()) return;
-  const data = JSON.stringify({ residents, pins }, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const pad = n => String(n).padStart(2,'0');
-  const now = new Date();
-  const stamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `residents-backup-${stamp}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-document.getElementById('importFileInput').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if(!file) return;
-  try{
-    const text = await file.text();
-    const data = JSON.parse(text);
-    if(!data || !Array.isArray(data.residents) || !Array.isArray(data.pins)){
-      throw new Error('รูปแบบไฟล์ไม่ถูกต้อง (ต้องเป็นไฟล์สำรองที่ดาวน์โหลดจากเว็บนี้)');
-    }
-    const ok = confirm('นำเข้าข้อมูลนี้จะแทนที่ข้อมูลปัจจุบันทั้งหมด ต้องการดำเนินการต่อหรือไม่?');
-    if(!ok){ e.target.value = ''; return; }
-    residents = data.residents;
-    pins = data.pins;
-    migrateStages();
-    syncStageNames();
-    await save();
-    render();
-    alert('นำเข้าข้อมูลสำเร็จ');
-  } catch(err){
-    alert('นำเข้าข้อมูลไม่สำเร็จ: ' + err.message);
-  }
-  e.target.value = '';
-});
 
 function pillPerimeterPoint(t, w, h){
   const r = h/2;
